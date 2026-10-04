@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ book.title }} | ProductiveReads{% endblock %}
+{% block content %}
+<section class="detail-page">
+  <div class="detail-cover image-detail-cover">
+    <img src="{% if book.image %}{{ url_for('static', filename='uploads/books/' ~ book.image) }}{% else %}{{ url_for('static', filename='images/book-placeholder.svg') }}{% endif %}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/book-placeholder.svg') }}';" alt="{{ book.title }} book cover">
+  </div>
+  <div class="detail-copy">
+    <p class="eyebrow">{{ book.category_name }} · ★ {{ book.rating }}</p>
+    <h1>{{ book.title }}</h1>
+    <p class="detail-author">by {{ book.author }}</p>
+    <p class="detail-description">{{ book.description }}</p>
+    <div class="takeaways"><p class="eyebrow">KEY TAKEAWAYS</p>{% for takeaway in book.takeaways.split(';') %}<span>✓ {{ takeaway.strip() }}</span>{% endfor %}</div>
+    <div class="detail-buy"><div><strong>₹{{ '%.0f'|format(book.price) }}</strong> <del>₹{{ '%.0f'|format(book.original_price) }}</del><p>{{ book.stock }} copies currently available</p></div><form action="{{ url_for('cart.add_to_cart', book_id=book.id) }}" method="post"><input type="hidden" name="next" value="{{ request.path }}"><label class="quantity">Qty <input type="number" name="quantity" value="1" min="1" max="{{ book.stock }}"></label><button class="solid-button large" type="submit">Add to cart <span>→</span></button></form></div>
+    <form action="{{ url_for('cart.toggle_wishlist', book_id=book.id) }}" method="post"><input type="hidden" name="next" value="{{ request.path }}"><button class="wishlist-button" type="submit">♡ Save to wishlist</button></form>
+  </div>
+</section>
+<section class="section related-section"><div class="section-heading"><div><p class="eyebrow">MORE TO EXPLORE</p><h2>Keep reading.</h2></div></div><div class="book-grid">{% for book in related %}{% include '_book_card.html' %}{% endfor %}</div></section>
+{% endblock %}

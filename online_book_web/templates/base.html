@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ProductiveReads{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/phase2.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/phase3.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/phase4.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/final-ui.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/invoice.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/book-images.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile-menu.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-nav.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <a class="brand" href="{{ url_for('main.home') }}"><span>PR</span> ProductiveReads</a>
+    <form class="nav-search" action="{{ url_for('main.books') }}" method="get">
+      <input name="q" value="{{ request.args.get('q', '') }}" placeholder="Search books, authors, ideas..." aria-label="Search books">
+      <button type="submit">Search</button>
+    </form>
+    <div class="nav-actions">
+      <a href="{{ url_for('main.books') }}">Explore</a>
+      <a class="admin-nav-link{% if session.get('admin_id') %} admin-active{% endif %}" href="{{ url_for('admin.dashboard') }}">⚙ Admin Panel</a>
+      {% if session.get('user_id') %}
+        <details class="profile-menu"><summary><span class="profile-avatar">{{ session.get('user_name', 'Reader')[0]|upper }}</span><span class="welcome">{{ session.get('user_name', 'Reader').split(' ')[0] }}</span></summary><div class="profile-dropdown"><a href="{{ url_for('cart.profile') }}">👤 My Profile</a><a href="{{ url_for('orders.history') }}">📦 My Orders</a><a href="{{ url_for('cart.wishlist') }}">♥ Wishlist</a><a href="{{ url_for('cart.view_cart') }}">🛒 Cart</a><a href="{{ url_for('auth.logout') }}">↪ Logout</a></div></details>
+      {% elif session.get('admin_id') %}
+        <details class="profile-menu"><summary><span class="profile-avatar">{{ session.get('admin_name', 'Admin')[0]|upper }}</span><span class="welcome">{{ session.get('admin_name', 'Admin').split(' ')[0] }}</span></summary><div class="profile-dropdown"><a href="{{ url_for('admin.profile') }}">👤 My Profile</a><a href="{{ url_for('admin.orders') }}">📦 My Orders</a><a href="{{ url_for('admin.wishlist') }}">♥ Wishlist</a><a class="admin-menu-link" href="{{ url_for('admin.dashboard') }}">🛠 Admin Panel</a><a href="{{ url_for('admin.logout') }}">↪ Logout</a></div></details>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Log in</a>
+        <a href="{{ url_for('auth.register') }}" class="solid-button">Join free</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% endwith %}
+
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="footer"><div><a class="brand" href="{{ url_for('main.home') }}"><span>PR</span> ProductiveReads</a><p>Read with intention. Grow with consistency.</p></div><div class="footer-links"><a href="{{ url_for('main.books') }}">Browse books</a><a href="{{ url_for('main.about') }}">About us</a><a href="{{ url_for('main.contact') }}">Contact</a></div><small>&copy; 2026 ProductiveReads</small></footer>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
